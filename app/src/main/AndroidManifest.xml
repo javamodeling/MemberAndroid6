@@ -25,9 +25,6 @@
             android:name=".MemberAddActivity"
             android:label="@string/add" />
         <activity
-            android:name=".MemberAdd2Activity"
-            android:label="@string/add" />
-        <activity
             android:name=".MemberViewActivity"
             android:label="@string/view"
             android:windowSoftInputMode="stateAlwaysHidden" />

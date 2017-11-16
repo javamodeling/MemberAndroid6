@@ -3,17 +3,12 @@ package com.devpino.memberandroid;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.Spinner;
 
 import com.devpino.memberandroid.databinding.ViewLayoutBinding;
 
@@ -23,6 +18,8 @@ public class MemberViewActivity extends AppCompatActivity {
 
     private ViewLayoutBinding viewLayoutBinding;
 
+    private MemberDao memberDao;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,16 +28,15 @@ public class MemberViewActivity extends AppCompatActivity {
 
         no = getIntent().getLongExtra("no", 0);
 
+        AppDatabase appDatabase = AppDatabase.getSqliteDatabase(this);
+
+        memberDao = appDatabase.memberDao();
+
     }
 
     private void loadData() {
 
-        MemberDbAdapter memberDbAdapter = MemberDbAdapter.getInstance();
-        memberDbAdapter.open();
-
-        Member member = memberDbAdapter.obtainMember(no);
-
-        memberDbAdapter.close();
+        Member member = memberDao.getMember(no);
 
         viewLayoutBinding.setMember(member);
 
@@ -118,14 +114,9 @@ public class MemberViewActivity extends AppCompatActivity {
 
     private void deleteMember() {
 
-        MemberDbAdapter memberDbAdapter = MemberDbAdapter.getInstance();
-        memberDbAdapter.open();
+        int result = memberDao.removeMember(no);
 
-        boolean result = memberDbAdapter.removeMember(no);
-
-        memberDbAdapter.close();
-
-        if (result) {
+        if (result > 0) {
 
             finish();
         }

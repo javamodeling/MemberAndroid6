@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,23 +14,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.devpino.memberandroid.databinding.Row2LayoutBinding;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private List<Member> members = new ArrayList<>();
+    private List<Member> memberEntities = new ArrayList<>();
 
     private ListView listView;
 
     private MemberArrayAdapter adapter = null;
+
+    private MemberDao memberDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
         listView = (ListView)findViewById(R.id.listview);
 
         listView.setOnItemClickListener(onItemClickListenerListView);
+
+        AppDatabase appDatabase = AppDatabase.getSqliteDatabase(this);
+
+        memberDao = appDatabase.memberDao();
 
         requestPermission();
     }
@@ -83,15 +86,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadData() {
 
-        MemberDbAdapter memberDbAdapter = MemberDbAdapter.getInstance(this);
+        memberEntities = memberDao.searchAllMembers();
 
-        memberDbAdapter.open();
-
-        members = memberDbAdapter.searchAllMembers();
-
-        memberDbAdapter.close();
-
-        adapter = new MemberArrayAdapter(this, members);
+        adapter = new MemberArrayAdapter(this, memberEntities);
 
         listView.setAdapter(adapter);
 
@@ -103,20 +100,20 @@ public class MainActivity extends AppCompatActivity {
 
         private final Activity context;
 
-        private final List<Member> members;
+        private final List<Member> memberEntities;
 
-        public MemberArrayAdapter(Activity context, List<Member> members) {
+        public MemberArrayAdapter(Activity context, List<Member> memberEntities) {
 
             super(context, R.layout.row_layout);
 
             this.context = context;
-            this.members = members;
+            this.memberEntities = memberEntities;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
-            Member member = members.get(position);
+            Member memberEntity = memberEntities.get(position);
 
             Row2LayoutBinding row2LayoutBinding = DataBindingUtil.getBinding(convertView);
 
@@ -129,12 +126,12 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
-            row2LayoutBinding.textViewName.setText(member.getMemberName());
-            row2LayoutBinding.textViewEmail.setText(member.getEmail());
+            row2LayoutBinding.textViewName.setText(memberEntity.getMemberName());
+            row2LayoutBinding.textViewEmail.setText(memberEntity.getEmail());
 
-            if(member.getPhotoUrl() != null) {
+            if(memberEntity.getPhotoUrl() != null) {
 
-                row2LayoutBinding.imageViewPhoto.setImageURI(Uri.parse(member.getPhotoUrl()));
+                row2LayoutBinding.imageViewPhoto.setImageURI(Uri.parse(memberEntity.getPhotoUrl()));
             }
 
             return row2LayoutBinding.getRoot();
@@ -143,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getCount() {
 
-            return members.size();
+            return memberEntities.size();
         }
     }
 
@@ -152,9 +149,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
-            Member member = members.get(position);
+            Member memberEntity = memberEntities.get(position);
 
-            long no = member.getNo();
+            long no = memberEntity.getNo();
 
             Intent intent = new Intent(MainActivity.this, MemberViewActivity.class);
             intent.putExtra("no", no);

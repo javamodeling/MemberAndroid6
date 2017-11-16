@@ -1,7 +1,12 @@
 package com.devpino.memberandroid;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+
 import java.io.Serializable;
 
+@Entity(tableName = "devpino_member")
 public class Member implements Serializable{
 
 	/**
@@ -9,16 +14,24 @@ public class Member implements Serializable{
 	 */
 	private static final long serialVersionUID = -6800961906229486245L;
 
+	@PrimaryKey(autoGenerate = true)
+	@ColumnInfo(name = "_id")
 	private long no;
+
+	@ColumnInfo(name = "member_name")
 	private String memberName = null;
 	private String email = null;
 	private String password = null;
 	private String address = null;
+
+	@ColumnInfo(name = "mobile_no")
 	private String mobileNo = null;
 	private String gender = null;
 	private String homepage = null;
 	private String job = null;
 	private String comments = null;
+
+	@ColumnInfo(name = "photo_url")
 	private String photoUrl = null;
 
     public static final String KEY_ADDRESS = "address";
@@ -32,8 +45,8 @@ public class Member implements Serializable{
     public static final String KEY_MOBILE_NO = "mobile_no";
     public static final String KEY_PHOTO_URL = "photo_url";
     public static final String KEY_ROWID = "_id";
-    
-	
+
+
 	public String getAddress() {
 		return address;
 	}
@@ -112,10 +125,6 @@ public class Member implements Serializable{
 
 	public void setPhotoUrl(String photoUrl) {
 		this.photoUrl = photoUrl;
-	}
-
-	public static long getSerialVersionUID() {
-		return serialVersionUID;
 	}
 
 	public String getPassword() {

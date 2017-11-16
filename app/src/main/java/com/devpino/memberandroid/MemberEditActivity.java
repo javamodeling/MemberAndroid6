@@ -21,6 +21,8 @@ public class MemberEditActivity extends AppCompatActivity {
 
     private String photoUrl;
 
+    private MemberDao  memberDao;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,11 +31,11 @@ public class MemberEditActivity extends AppCompatActivity {
 
         no = getIntent().getLongExtra("no", 0);
 
-        MemberDbAdapter memberDbAdapter = MemberDbAdapter.getInstance();
-        memberDbAdapter.open();
+        AppDatabase appDatabase = AppDatabase.getSqliteDatabase(this);
 
-        Member member = memberDbAdapter.obtainMember(no);
-        memberDbAdapter.close();
+        memberDao = appDatabase.memberDao();
+
+        Member member = memberDao.getMember(no);
 
         editLayoutBinding.setMember(member);
 
@@ -113,13 +115,7 @@ public class MemberEditActivity extends AppCompatActivity {
 
         member.setJob(job);
 
-        MemberDbAdapter memberDbAdapter = MemberDbAdapter.getInstance(this);
-
-        memberDbAdapter.open();
-
-        memberDbAdapter.modifyMember(member);
-
-        memberDbAdapter.close();
+        memberDao.modifyMember(member);
 
         finish();
     }
