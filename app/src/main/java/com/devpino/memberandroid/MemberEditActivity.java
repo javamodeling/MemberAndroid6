@@ -104,7 +104,10 @@ public class MemberEditActivity extends AppCompatActivity {
 
         member.setMobileNo(member.getMobileNo1() + "-" + member.getMobileNo2() + "-" + member.getMobileNo3());
 
-        member.setPhotoUrl(photoUrl);
+        if (photoUrl != null) {
+
+            member.setPhotoUrl(photoUrl);
+        }
 
         if (isMale) {
             member.setGender("M");

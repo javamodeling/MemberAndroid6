@@ -1,33 +1,23 @@
 package com.devpino.memberandroid;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
-import com.devpino.memberandroid.databinding.Row2LayoutBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private List<Member> memberEntities = new ArrayList<>();
+    private List<Member> members = new ArrayList<>();
 
-    private ListView listView;
+    private RecyclerView recyclerView;
 
-    private MemberArrayAdapter adapter = null;
+    private RecyclerView.Adapter memberAdapter;
 
     private MemberDao memberDao;
 
@@ -36,9 +26,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        listView = (ListView)findViewById(R.id.listview);
+        recyclerView = (RecyclerView)findViewById(R.id.recyclerViewMembers);
 
-        listView.setOnItemClickListener(onItemClickListenerListView);
+        recyclerView.setHasFixedSize(true);
 
         AppDatabase appDatabase = AppDatabase.getSqliteDatabase(this);
 
@@ -59,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
 
         loadData();
 
-        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -86,77 +75,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadData() {
 
-        memberEntities = memberDao.searchAllMembers();
+        members = memberDao.searchAllMembers();
 
-        adapter = new MemberArrayAdapter(this, memberEntities);
+        memberAdapter = new MemberAdapter(members);
 
-        listView.setAdapter(adapter);
-
+        recyclerView.setAdapter(memberAdapter);
 
     }
 
-
-    private class MemberArrayAdapter extends ArrayAdapter<String> {
-
-        private final Activity context;
-
-        private final List<Member> memberEntities;
-
-        public MemberArrayAdapter(Activity context, List<Member> memberEntities) {
-
-            super(context, R.layout.row_layout);
-
-            this.context = context;
-            this.memberEntities = memberEntities;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            Member memberEntity = memberEntities.get(position);
-
-            Row2LayoutBinding row2LayoutBinding = DataBindingUtil.getBinding(convertView);
-
-            // reuse views
-            if (row2LayoutBinding == null) {
-
-                LayoutInflater inflater = context.getLayoutInflater();
-
-                row2LayoutBinding = DataBindingUtil.inflate(inflater, R.layout.row2_layout, parent, false);
-
-            }
-
-            row2LayoutBinding.textViewName.setText(memberEntity.getMemberName());
-            row2LayoutBinding.textViewEmail.setText(memberEntity.getEmail());
-
-            if(memberEntity.getPhotoUrl() != null) {
-
-                row2LayoutBinding.imageViewPhoto.setImageURI(Uri.parse(memberEntity.getPhotoUrl()));
-            }
-
-            return row2LayoutBinding.getRoot();
-        }
-
-        @Override
-        public int getCount() {
-
-            return memberEntities.size();
-        }
-    }
-
-    AdapterView.OnItemClickListener onItemClickListenerListView = new AdapterView.OnItemClickListener() {
-
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-
-            Member memberEntity = memberEntities.get(position);
-
-            long no = memberEntity.getNo();
-
-            Intent intent = new Intent(MainActivity.this, MemberViewActivity.class);
-            intent.putExtra("no", no);
-
-            startActivity(intent);
-        }
-    };
 }
