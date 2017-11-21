@@ -90,7 +90,6 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
 
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return members.size();
