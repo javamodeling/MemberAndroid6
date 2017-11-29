@@ -30,10 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.setHasFixedSize(true);
 
-        AppDatabase appDatabase = AppDatabase.getSqliteDatabase(this);
-
-        memberDao = appDatabase.memberDao();
-
         requestPermission();
     }
 
@@ -75,7 +71,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadData() {
 
-        members = memberDao.searchAllMembers();
+        AppDatabase appDatabase = AppDatabase.getInstance(getApplicationContext());
+
+//        memberDao = appDatabase.memberDao();
+
+        members = appDatabase.memberDao_searchAllMembers();
 
         memberAdapter = new MemberAdapter(members);
 

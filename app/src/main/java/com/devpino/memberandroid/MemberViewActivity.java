@@ -18,8 +18,6 @@ public class MemberViewActivity extends AppCompatActivity {
 
     private ViewLayoutBinding viewLayoutBinding;
 
-    private MemberDao memberDao;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,15 +26,13 @@ public class MemberViewActivity extends AppCompatActivity {
 
         no = getIntent().getLongExtra("no", 0);
 
-        AppDatabase appDatabase = AppDatabase.getSqliteDatabase(this);
-
-        memberDao = appDatabase.memberDao();
-
     }
 
     private void loadData() {
 
-        Member member = memberDao.getMember(no);
+        AppDatabase appDatabase = AppDatabase.getInstance(getApplicationContext());
+
+        Member member = appDatabase.memberDao_getMember(no);
 
         viewLayoutBinding.setMember(member);
 
@@ -114,7 +110,9 @@ public class MemberViewActivity extends AppCompatActivity {
 
     private void deleteMember() {
 
-        int result = memberDao.removeMember(no);
+        AppDatabase appDatabase = AppDatabase.getInstance(getApplicationContext());
+
+        int result = appDatabase.memberDao_removeMember(no);
 
         if (result > 0) {
 

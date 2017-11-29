@@ -19,8 +19,6 @@ public class MemberAddActivity extends AppCompatActivity {
 
     private AddLayoutBinding addLayoutBinding;
 
-    private MemberDao memberDao;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,10 +26,6 @@ public class MemberAddActivity extends AppCompatActivity {
         addLayoutBinding = DataBindingUtil.setContentView(this, R.layout.add_layout);
 
         addLayoutBinding.setMember(new Member());
-
-        AppDatabase appDatabase = AppDatabase.getSqliteDatabase(this);
-
-        memberDao = appDatabase.memberDao();
 
     }
 
@@ -102,7 +96,9 @@ public class MemberAddActivity extends AppCompatActivity {
 
         member.setJob(job);
 
-        memberDao.addMember(member);
+        AppDatabase appDatabase = AppDatabase.getInstance(getApplicationContext());
+
+        appDatabase.memberDao_addMember(member);
 
         finish();
     }
